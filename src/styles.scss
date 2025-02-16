@@ -1,1 +1,15 @@
 /* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+
+// Customize the entire app. Change :root to your selector if you want to scope the styles.
+:root {
+  @include mat.button-overrides((
+    filled-container-color: #2C2E33,
+    filled-label-text-color: #FFF,
+    text-label-text-color: #2C2E33
+  ));
+}
