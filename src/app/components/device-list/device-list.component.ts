@@ -5,10 +5,11 @@ import { MatInputModule } from '@angular/material/input'
 import { MatButtonModule } from '@angular/material/button'
 import { MatTableModule } from '@angular/material/table';
 import { IDeviceDataInterface } from '../../interfaces/device-data.interface';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-device-list',
-  imports: [MatFormFieldModule, MatIconModule, MatInputModule, MatButtonModule, MatTableModule],
+  imports: [MatFormFieldModule, MatIconModule, MatInputModule, MatButtonModule, MatTableModule, RouterModule],
   templateUrl: './device-list.component.html',
   styleUrl: './device-list.component.scss'
 })
