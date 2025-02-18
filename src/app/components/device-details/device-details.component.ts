@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { MatListModule } from '@angular/material/list';
+import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
   selector: 'app-device-details',
-  imports: [MatListModule],
+  imports: [MatListModule, MatDividerModule],
   templateUrl: './device-details.component.html',
   styleUrl: './device-details.component.scss'
 })
