@@ -1,0 +1,9 @@
+<div class="device-details ">
+    <mat-list class="device-details__options-list">
+        @for (item of deviceOptions; track item) {
+            <mat-list-item>
+                {{ item.label }}: {{ item.value }}
+            </mat-list-item>
+        }
+    </mat-list>
+</div>
