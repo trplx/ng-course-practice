@@ -303,3 +303,272 @@ import { MatListModule } from '@angular/material/list';
 ```
 
 18. Заменить компоненту в app.routes, посмотреть, что компоеннта детальной информации отображается в браузере.
+
+## Lesson 4
+
+1. Разделить приложение на модули. В данном случае можно выделить модуль работы с устройствами
+ 
+```shell
+ng generate module children/devices --routing
+```
+
+_Создает модуль DevicesModule вместе с файлом маршрутизации devices-routing.module.ts._
+
+Перенести компоненты. Структура проекта после переноса:
+
+```
+app/
+│── children/
+│   │── devices/
+│   │   │── components/
+│   │   │   │── device-list/
+│   │   │   │── device-details/
+│   │   │── devices-routing.module.ts
+│   │   │── devices.module.ts
+│── app.routes.ts
+```
+
+2. Настройка ленивой загрузки в `app.routes.ts`
+
+```ts
+export const routes: Routes = [
+    {
+        path: '',
+        redirectTo: 'devices',
+        pathMatch: 'full',
+    },
+    {
+        path: 'devices',
+        loadChildren: () => import('./children/devices/devices.module').then(m => m.DevicesModule)
+    }
+];
+```
+3. Настроить маршрутизацию в модуле устройств `devices-routing.module.ts`
+
+```ts
+const routes: Routes = [
+    { path: '', component: DeviceListComponent },
+    { path: ':id', component: DeviceDetailsComponent }
+];
+
+@NgModule({
+    imports: [RouterModule.forChild(routes)],
+    exports: [RouterModule]
+})
+export class DevicesRoutingModule {}
+```
+
+Проверить в браузере, что отображается страница детальной информации
+
+4. Добавление навигации на страницу деталей устройства
+
+В `device-list.component.ts` добавить метод для навигации:
+
+```ts
+protected router: Router = inject(Router); // пока какая-то магия DI
+
+protected navigateToDetails(id: string): void {
+    this.router.navigate(['/devices', id]);
+}
+```
+
+В шаблоне компоненты привязать вызов метода и немного стилей
+
+```angular181html
+    <tr mat-row *matRowDef="let row; let element; columns: displayedColumns;"
+        class="table__row" 
+        (click)="navigateToDetails(element.id)"
+    ></tr>
+```
+
+```scss
+.table {
+  padding: 3em;
+
+  &__row {
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+
+    &:hover {
+      background-color: #d6d6d6;
+    }
+  }
+}
+```
+
+Проверить в браузере, что отображается страница детальной информации
+
+5. Добавить обработку динамического параметра в роуте
+
+Вынести список девайсов в константу `device-list.constant.ts`
+
+```
+devices/
+│── constants/
+    │── device-list.constant.ts
+```
+
+```ts
+export const DEVICE_LIST: IDeviceDataInterface[] = [
+    {
+        position: '1',
+        name: 'iPhone',
+        model: '16 pro max',
+        id: '12345',
+        date: '19.02.2025'
+    },
+    {
+        position: '2',
+        name: 'iPhone',
+        model: '15 pro',
+        id: '12346',
+        date: '03.03.2025'
+    }
+];
+```
+
+Заменить на нее в компоненте листа и деталей
+
+```ts
+//device-list.component.ts
+  public devices: IDeviceDataInterface[] = DEVICE_LIST;
+```
+
+```ts
+//device-details.component.ts
+public deviceOptions: Array<{ label: string, value: string }> = []
+
+protected activatedRoute: ActivatedRoute = inject(ActivatedRoute); // черная магия DI
+
+constructor() {
+    this.activatedRoute.params.subscribe((params: Params) => { // черная магия RxJs
+        const device = DEVICE_LIST.find((el) => el.id === params['deviceId']);
+
+        if (!device) {
+            return;
+        }
+
+        // маппинг девайса к списку опций
+        this.deviceOptions = Object.entries(device).map(([label, value]: [string, string]) => {
+            return { label, value };
+        })
+    })
+}
+```
+
+Проверить в браузере, что на странице списка отобразился новый девайс, а при переходе на детальную страницу отображается выбранный девайс
+
+6. Добавить guard
+
+```shell
+ng generate guard guards/auth
+```
+
+Выбрать canActivate
+
+Добавить в guard проверку на наличие токена `auth.guard.ts`
+```ts
+export const authGuard: CanActivateFn = (route, state) => {
+    const router: Router = inject(Router);
+
+    return !!localStorage.getItem('token') || router.parseUrl('401');
+};
+```
+
+Добавить защиту маршрута `app.routes.ts`
+
+```ts
+{
+    path: 'devices',
+    loadChildren: () => import('./children/devices/devices.module').then(m => m.DevicesModule),
+    canActivate: [authGuard],
+},
+```
+
+Теперь при открытии приложения отображается пустой экран. Потому что пользователь не "авторизован"
+Добавим функционал "авторизации" и страницу 401
+
+7. Создание 401
+
+```shell
+ng generate component components/unauthorized
+```
+
+```angular181html
+<div class="unauth unauth__container">
+    <H1>Попробуйте авторизоваться!</H1>
+</div>
+```
+
+```scss
+.unauth {
+	margin: 3em;
+
+	&__container {
+		display: flex;
+		justify-content: center;
+	}
+}
+```
+
+И добавим "авторизацию".
+
+```ts
+//header.component.ts
+protected router: Router = inject(Router);
+
+protected sidnIn(): void {
+    localStorage.setItem('token', 'jwt qsjhdinjsxiqo123');
+    this.router.navigate(['/']);
+}
+```
+
+```angular181html
+<button mat-button class="app-header__button" (click)="sidnIn()">Sign In</button>
+```
+
+Проверяем в браузере, что без "авторизации" доступа к девайсам нет, а после "авторизации" - есть
+
+8. Resolver
+
+```shell
+ng generate resolver resolvers/device
+```
+
+Добавляем получения девайса
+
+```ts
+export const deviceResolver: ResolveFn<IDeviceDataInterface | undefined> = (route, state) => {
+    const deviceId = route.paramMap.get('deviceId');
+
+    return DEVICE_LIST.find((device) => device.id === deviceId);
+};
+```
+
+Добавляем в маршрутизацию
+
+```ts
+//devices-routing.module.ts
+{
+    path: ':deviceId',
+    component: DeviceDetailsComponent,
+    resolve: { device: deviceResolver }
+}
+```
+
+И обновляем получение девайса в конструкторе компоненты
+
+```ts
+//device-details.component.ts
+this.activatedRoute.data.subscribe((data: Data) => {
+    const device: IDeviceDataInterface | undefined = data['device'];
+
+    if (!device) {
+        return;
+    }
+
+    this.deviceOptions = Object.entries(device).map(([label, value]: [string, string]) => {
+        return { label, value };
+    })
+});
+```
