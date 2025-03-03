@@ -1,10 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input'
 import { MatButtonModule } from '@angular/material/button'
 import { MatTableModule } from '@angular/material/table';
-import { IDeviceDataInterface } from '../../interfaces/device-data.interface';
+import { IDeviceDataInterface } from '../../../../interfaces/device-data.interface';
+import { Router } from '@angular/router';
+import { DEVICE_LIST } from '../../contsnts/device-list.constant';
 
 @Component({
   selector: 'app-device-list',
@@ -14,16 +16,13 @@ import { IDeviceDataInterface } from '../../interfaces/device-data.interface';
 })
 export class DeviceListComponent {
 
-  public devices: IDeviceDataInterface[]  = [
-    {
-      position: '1',
-      name: 'iPhone',
-      model: '16 pro max',
-      id: '12345',
-      date: '19.02.2025'
-    }
-  ];
+  public devices: IDeviceDataInterface[] = DEVICE_LIST;
 
   public displayedColumns: string[] = ['position', 'name', 'model', 'id', 'date'];
 
+  protected router: Router = inject(Router);
+
+  protected navigateToDetails(deviceId: string): void {
+    this.router.navigate(['/devices', deviceId]);
+  }
 }

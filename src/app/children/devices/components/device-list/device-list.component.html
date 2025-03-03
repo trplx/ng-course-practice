@@ -39,7 +39,9 @@
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    <tr mat-row *matRowDef="let row; let element; columns: displayedColumns;"
+        class="table__row" (click)="navigateToDetails(element.id)"
+    ></tr>
   </table>
 
   <button mat-flat-button class="add-device-button">Add device</button>

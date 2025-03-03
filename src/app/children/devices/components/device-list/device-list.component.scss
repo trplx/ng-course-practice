@@ -8,6 +8,15 @@
 
 .table {
   padding: 3em;
+
+  &__row {
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+
+    &:hover {
+      background-color: #d6d6d6;
+    }
+  }
 }
 
 .add-device-button {
