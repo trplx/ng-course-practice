@@ -1,10 +1,24 @@
 import { Routes } from '@angular/router';
-import { DeviceListComponent } from './components/device-list/device-list.component';
-// import { DeviceDetailsComponent } from './components/device-details/device-details.component';
+import { authGuard } from './guards/auth.guard';
+import { UnauthorizedComponent } from './components/unauthorized/unauthorized.component';
 
 export const routes: Routes = [
     {
         path: '',
-        component: DeviceListComponent
+        redirectTo: 'devices',
+        pathMatch: 'full',
+    },
+    {
+        path: 'devices',
+        loadChildren: () => import('./children/devices/devices.module').then(m => m.DevicesModule),
+        canActivate: [authGuard],
+    },
+    {
+        path: '401',
+        component: UnauthorizedComponent
+    },
+    {
+        path: '**',
+        redirectTo: 'devices',
     }
 ];
