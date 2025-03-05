@@ -17,4 +17,8 @@ export const routes: Routes = [
         path: '401',
         component: UnauthorizedComponent
     },
+    {
+        path: '**',
+        redirectTo: 'devices',
+    }
 ];

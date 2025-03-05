@@ -1,13 +1,12 @@
 import { Component, inject } from '@angular/core';
-import { MatListModule } from '@angular/material/list';
 import { ActivatedRoute, Data } from '@angular/router';
 import { IDeviceDataInterface } from '../../../../interfaces/device-data.interface';
 
 @Component({
-  selector: 'app-device-details',
-  imports: [MatListModule],
-  templateUrl: './device-details.component.html',
-  styleUrl: './device-details.component.scss'
+    standalone: false,
+    selector: 'app-device-details',
+    templateUrl: './device-details.component.html',
+    styleUrl: './device-details.component.scss'
 })
 export class DeviceDetailsComponent {
 
@@ -28,4 +27,4 @@ export class DeviceDetailsComponent {
             })
         });
     }
-};
+}
