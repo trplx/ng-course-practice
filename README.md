@@ -303,3 +303,14 @@ import { MatListModule } from '@angular/material/list';
 ```
 
 18. Заменить компоненту в app.routes, посмотреть, что компоеннта детальной информации отображается в браузере.
+
+
+## Lesson 3
+
+
+
+## Lesson 4
+
+
+
+## Lesson 5
