@@ -1,18 +1,16 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-
-import { HeaderComponent } from './components/header/header.component';
-import { FooterComponent } from './components/footer/footer.component';
-import { DeviceRequestService } from './services/device-request.service';
+import { Child1Component } from './components/child-1/child-1.component';
+import { Child2Component } from './components/child-2/child-2.component';
 
 @Component({
-  selector: 'app-root',
-  imports: [RouterOutlet, HeaderComponent, FooterComponent],
-  providers: [
-    DeviceRequestService
+    selector: 'app-root',
+    imports: [Child1Component, Child2Component],
+    providers: [
+
     ],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+    templateUrl: './app.component.html',
+    styleUrl: './app.component.scss'
 })
 export class AppComponent {
 
