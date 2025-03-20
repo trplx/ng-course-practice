@@ -2,7 +2,9 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { DeviceListComponent } from './components/device-list/device-list.component';
 import { DeviceDetailsComponent } from './components/device-details/device-details.component';
-import { deviceResolver } from '../../resolvers/device.resolver';
+import { DeviceRequestService } from '../../services/device-request.service';
+import { HttpClientModule } from '@angular/common/http';
+// import { deviceResolver } from '../../resolvers/device.resolver';
 
 const routes: Routes = [
     {
@@ -12,13 +14,16 @@ const routes: Routes = [
     {
         path: ':deviceId',
         component: DeviceDetailsComponent,
-        resolve: { device: deviceResolver }
+        // resolve: { device: deviceResolver }
     }
 ];
 
 @NgModule({
-    imports: [RouterModule.forChild(routes)],
-    exports: [RouterModule]
+    imports: [RouterModule.forChild(routes), HttpClientModule],
+    exports: [RouterModule],
+    providers: [
+        DeviceRequestService
+    ]
 })
 export class DevicesRoutingModule {
 }

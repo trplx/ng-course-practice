@@ -1,23 +1,39 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { IDeviceDataInterface } from '../../../../interfaces/device-data.interface';
 import { Router } from '@angular/router';
-import { DEVICE_LIST } from '../../contsnts/device-list.constant';
+import { DeviceRequestService } from '../../../../services/device-request.service';
+
 
 @Component({
-  standalone: false,
-  selector: 'app-device-list',
-  templateUrl: './device-list.component.html',
-  styleUrl: './device-list.component.scss'
+    standalone: false,
+    selector: 'app-device-list',
+    templateUrl: './device-list.component.html',
+    styleUrl: './device-list.component.scss'
 })
-export class DeviceListComponent {
+export class DeviceListComponent implements OnInit {
 
-  public devices: IDeviceDataInterface[] = DEVICE_LIST;
+    public devices: IDeviceDataInterface[] = [];
 
-  public displayedColumns: string[] = ['position', 'name', 'model', 'id', 'date'];
+    public displayedColumns: string[] = ['position', 'name', 'model', 'id', 'date'];
 
-  protected router: Router = inject(Router);
+    protected router: Router = inject(Router);
 
-  protected navigateToDetails(deviceId: string): void {
-    this.router.navigate(['/devices', deviceId]);
-  }
+    // private _deviceRequestService: DeviceRequestService = inject(DeviceRequestService);
+
+
+    constructor(
+        private _deviceRequestService: DeviceRequestService
+    ) { }
+
+    protected navigateToDetails(deviceId: string): void {
+        this.router.navigate(['/devices', deviceId]);
+    }
+
+    public ngOnInit(): void {
+        this._deviceRequestService.getDevices()
+            .subscribe((response) => {
+                this.devices = response;
+            });
+    }
+
 }
