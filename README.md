@@ -572,3 +572,478 @@ this.activatedRoute.data.subscribe((data: Data) => {
     })
 });
 ```
+
+## Lesson 7
+
+1. Реализовать форму с использованием шаблонных форм.
+
+
+```shell
+ng g component children/devices/components/add-device 
+```
+
+В шаблон добавим форму
+
+```angular181html
+<div class="add-device-form__wrapper">  
+    <form>  
+        <mat-form-field appearance="fill" class="add-device-form__control">  
+            <mat-label>Device id</mat-label>  
+            <input matInput name="deviceId">  
+        </mat-form-field>  
+  
+        <mat-form-field appearance="fill" class="add-device-form__control">  
+            <mat-label>Device name</mat-label>  
+            <input matInput name="deviceName">  
+        </mat-form-field>  
+  
+        <mat-form-field appearance="fill" class="add-device-form__control">  
+            <mat-label>Device model</mat-label>  
+            <input matInput name="deviceModel">  
+        </mat-form-field>  
+  
+        <button mat-flat-button color="primary" class="add-device-form__btn" type="submit">  
+            Add  
+        </button>  
+    </form>  
+  
+    @for (item of newDevices; track item) {  
+        <mat-list-item>  
+            {{ item | json }}  
+        </mat-list-item>  
+    }  
+</div>
+```
+
+И стили
+
+```scss
+.add-device-form {  
+    &__wrapper {  
+       display: flex;  
+       flex-direction: column;  
+       gap: 16px;  
+    }  
+  
+    &__control {  
+       width: 100%;  
+    }  
+}
+```
+
+Теперь создадим модель девайса
+
+
+```ts
+export class Device {  
+    date: string = new Date().toISOString();  
+    position: string = '6';  
+  
+    constructor(  
+        public id: string = crypto.randomUUID(),  
+        public name: string,  
+        public model: string,  
+    ) {  
+    }
+}
+```
+
+Далее создадим поля в компоненте
+
+```ts
+@Component({  
+    selector: 'app-add-device',  
+    imports: [  
+        MatFormField,  
+        MatInput,  
+        FormsModule,  
+        MatButton  
+    ],  
+    templateUrl: './add-device.component.html',  
+    styleUrl: './add-device.component.scss'  
+})  
+export class AddDeviceComponent {  
+    protected newDevices: Device[] = [];  
+  
+    protected id: string = crypto.randomUUID();  
+    protected name: string = 'Xiaomi';  
+    protected model: string = 'Xiaomi Mi 5G Turbo 1024Gb';
+
+	protected onSubmit(): void {  
+	    this.newDevices.push(new Device(  
+	        this.id,  
+	        this.name,  
+	        this.model,  
+	    ));  
+	}
+  
+}
+```
+
+В html для полей мы прокинем `ngModel` и обработку подтверждения формы
+
+```angular181html
+<form (ngSubmit)="onSubmit()">  
+    <mat-form-field appearance="fill" class="add-device-form__control">  
+        <mat-label>Device id</mat-label>  
+        <input matInput name="deviceId" [ngModel]="id">  
+    </mat-form-field>  
+  
+    <mat-form-field appearance="fill" class="add-device-form__control">  
+        <mat-label>Device name</mat-label>  
+        <input matInput name="deviceName" [ngModel]="name">  
+    </mat-form-field>  
+  
+    <mat-form-field appearance="fill" class="add-device-form__control">  
+        <mat-label>Device model</mat-label>  
+        <input matInput name="deviceModel" [ngModel]="model">  
+    </mat-form-field>  
+  
+    <button mat-flat-button color="primary" class="add-device-form__btn" type="submit">  
+        Add  
+    </button>  
+</form>
+```
+
+Форма заполняется значениями из полей. Однако как бы не меняли значения в контролах, при сабмите данные не поменяются. Для этого нужно использовать двухстороннюю привзяку для моделей `[ngModel]` на `[(ngModel])`;
+
+```angular181html
+<form (ngSubmit)="onSubmit()">  
+    <mat-form-field appearance="fill" class="add-device-form__control">  
+        <mat-label>Device id</mat-label>  
+        <input matInput name="deviceId" [(ngModel)]="id">  
+    </mat-form-field>  
+  
+    <mat-form-field appearance="fill" class="add-device-form__control">  
+        <mat-label>Device name</mat-label>  
+        <input matInput name="deviceName" [(ngModel)]="name">  
+    </mat-form-field>  
+  
+    <mat-form-field appearance="fill" class="add-device-form__control">  
+        <mat-label>Device model</mat-label>  
+        <input matInput name="deviceModel" [(ngModel)]="model">  
+    </mat-form-field>  
+  
+    <button mat-flat-button color="primary" class="add-device-form__btn" type="submit">  
+        Add  
+    </button>  
+</form>
+```
+2. Реализовать форму с использованием реактивных форм.
+
+Импортировать в компоненту `AddDeviceComponent` модуль `ReactiveFormsModule`.
+
+Далее создадим форм группу.
+```ts
+protected form: FormGroup = new FormGroup({  
+    deviceId: new FormControl(crypto.randomUUID()),  
+    deviceName: new FormControl('', Validators.required),  
+    deviceModel: new FormControl('', Validators.required),  
+});
+```
+Добавим привязку форм группы `formGroup` и привяжем каждый контрол с помощью `formControlName`.
+
+ ```angular181html
+ <form [formGroup]="deviceForm" (ngSubmit)="onSubmit()">  
+    <mat-form-field appearance="fill" class="add-device-form__control">  
+        <mat-label>Device id</mat-label>  
+        <input matInput formControlName="deviceId">  
+    </mat-form-field>  
+  
+    <mat-form-field appearance="fill" class="add-device-form__control">  
+        <mat-label>Device name</mat-label>  
+        <input matInput formControlName="deviceName">  
+    </mat-form-field>  
+  
+    <mat-form-field appearance="fill" class="add-device-form__control">  
+        <mat-label>Device model</mat-label>  
+        <input matInput formControlName="deviceModel">  
+    </mat-form-field>  
+  
+    <button mat-flat-button color="primary" class="add-device-form__btn" type="submit">  
+        Add  
+    </button>  
+</form>
+```
+Добавим проверку на ID с помощью валидатора и regExp
+
+```ts
+ Validators.pattern(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/)
+```
+
+И в классе реактивной формы обработаем сабмит
+
+```ts
+protected onSubmit(): void {  
+    this.newDevices.push(new Device(  
+        this.deviceForm.value.deviceId,  
+        this.deviceForm.value.deviceName,  
+        this.deviceForm.value.deviceModel,  
+    ));  
+}
+```
+Добавим обработку имитации загрузки на сервер. С помощью rxJs и добавим лоадер для кнопки. Для этого импортируем модуль спинера `MatProgressSpinnerModule` и добавим обработку загрузки
+
+```ts
+protected loading: WritableSignal<boolean> = signal(false);
+
+  
+protected onSubmit(): void {  
+    this.loading.set(true);  
+  
+    of(this.deviceForm.value)  
+        .pipe(  
+            delay(1000),  
+            finalize(() => this.loading.set(false)),  
+        )  
+    .subscribe((value) => {  
+        this.newDevices.push(new Device(  
+            value.deviceId,  
+            value.deviceName,  
+            value.deviceModel,  
+        ));  
+    });  
+}
+```
+
+Теперь добавим спиннер в форме
+
+```angular181html
+<button mat-flat-button color="primary" [disabled]="deviceForm.invalid || loading()" class="add-device-form__btn" type="submit">  
+    <mat-spinner *ngIf="loading()" diameter="24" color="accent" mode="indeterminate"></mat-spinner>  
+    <span *ngIf="!loading()">Add</span>  
+</button>
+```
+
+3. Создание кастомного валидатора.
+
+Вынесем логику валидации идентификатора устройства в отдельный валидатор.
+
+```ts
+import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';  
+  
+export function deviceIdValidator(): ValidatorFn {  
+    return (control: AbstractControl): ValidationErrors | null => {  
+        if (!control.value) {  
+            return null;  
+        }  
+  
+        const valid = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(control.value);  
+  
+        return valid ? null : { invalidUUID: { value: control.value } };  
+    };  
+}
+```
+Применим на форме и добавим обработку ошибки
+```ts
+protected deviceForm: FormGroup = new FormGroup({  
+    deviceId: new FormControl(crypto.randomUUID(), uuidValidator()),  
+    deviceName: new FormControl('', Validators.required),  
+    deviceModel: new FormControl('', Validators.required),  
+});
+```
+
+```angular181html
+            <mat-error *ngIf="deviceForm.controls['deviceId']?.hasError('invalidUUID')">
+                Device ID must be in UUID format.
+            </mat-error>
+```
+
+4. Реализация валидатора через директиву
+
+
+```ts
+@Directive({   
+selector: '[uuid-validator]',  
+    providers: [{  
+        provide: NG_VALIDATORS,  
+        useExisting: UuidValidatorDirective,  
+        multi: true  
+    }],  
+})  
+export class UuidValidatorDirective implements Validator {  
+    public validate(control: AbstractControl): ValidationErrors | null {  
+        return uuidValidator()(control);  
+    }  
+}
+```
+
+Теперь в шаблоне для пароля будет выглядеть так:
+
+```angular181html
+<mat-form-field appearance="fill" class="add-device-form__control">  
+    <mat-label>Device id</mat-label>  
+    <input uuid-validator matInput formControlName="deviceId">  
+    <mat-error *ngIf="deviceForm.controls['deviceId']?.hasError('invalidUUID')">  
+        Device ID must be in UUID format.  
+    </mat-error>  
+</mat-form-field>
+```
+
+Можно использовать более краткий провайд в директиве:
+
+```ts
+@Directive({  
+    selector: '[uuid-validator]',  
+    providers: [{  
+        provide: NG_VALIDATORS,  
+        useFactory: () => {  
+            return uuidValidator();  
+        },  
+        multi: true  
+    }],  
+})  
+export class UuidValidatorDirective {  
+  
+}
+```
+
+5. Асинхронный валидатор
+
+```ts
+@Directive({  
+    selector: '[uuid-validator]',  
+    providers: [{  
+        provide: NG_ASYNC_VALIDATORS,  
+        useExisting: UuidValidatorDirective,  
+        multi: true  
+    }],  
+})  
+export class UuidValidatorDirective implements Validator {  
+    public validate(control: AbstractControl): ValidationErrors | null {  
+        return of(uuidValidator()(control))  
+            .pipe(  
+                delay(1000),  
+            );  
+    }  
+}
+```
+
+6. Типизированные формы
+
+
+Создадим интерфейс формы:
+```ts
+export interface IAddDeviceForm {  
+    deviceId: FormControl<string>;  
+    deviceName: FormControl<string>;  
+    deviceModel: FormControl<string>;  
+}
+```
+
+И как generic тип пропишем в formGroup:
+
+```ts
+FormGroup<IAddDeviceForm>
+```
+Теперь, где мы инициализируем значение формы возникла ошибка, что поле может быть string | undefined, решением этого будет добавление в опции nullable опции:
+
+```ts
+protected deviceForm: FormGroup<IAddDeviceForm> = new FormGroup<IAddDeviceForm>({  
+    deviceId: new FormControl<string>(crypto.randomUUID(), { nonNullable: true }),  
+    deviceName: new FormControl<string>('', { nonNullable: true, validators: uuidValidator }),  
+    deviceModel: new FormControl<string>('', { nonNullable: true, validators: Validators.required }),  
+});
+```
+
+И для сбора значений с формы воспользуемся функцией getRawValue():
+```ts
+of(this.deviceForm.getRawValue())
+```
+
+Теперь для привязки можно использовать `[formControl]="deviceForm.controls.deviceId"`
+
+7. MVVM
+
+```ts
+export class AddDeviceFormViewModel {  
+    get controlsMap(): IAddDeviceForm {  
+        return this.form.controls;  
+    }  
+  
+    get form(): FormGroup<IAddDeviceForm> {  
+        return this._form;  
+    }  
+  
+    private _form: FormGroup<IAddDeviceForm> = new FormGroup<IAddDeviceForm>(this.getControls());  
+  
+    public toModel(): Device {  
+        const formValue = this._form.getRawValue();  
+  
+        return new Device(  
+            formValue.deviceId,  
+            formValue.deviceName,  
+            formValue.deviceModel,  
+        );  
+    }  
+  
+    public getFormValue(name: keyof IAddDeviceForm): string | undefined {  
+        return this.controlsMap[name] ? this.controlsMap[name].value : undefined;  
+    }  
+  
+    public setFormValue(name: keyof IAddDeviceForm, value: string, onlySelf: boolean = false, emitEvent: boolean = true): void {  
+        if (this.controlsMap[name]) {  
+            this.controlsMap[name].setValue(value, { onlySelf, emitEvent });  
+        }  
+    }  
+  
+    public valueChanges(name: keyof IAddDeviceForm): Observable<string> {  
+        return this.controlsMap[name] ? this.controlsMap[name].valueChanges : EMPTY;  
+    }  
+  
+    protected getControls(): IAddDeviceForm {  
+        return {  
+            deviceId: new FormControl<string>(crypto.randomUUID(), { nonNullable: true }),  
+            deviceName: new FormControl<string>('', { nonNullable: true, validators: uuidValidator() }),  
+            deviceModel: new FormControl<string>('', { nonNullable: true, validators: Validators.required }),  
+        };  
+    }  
+}
+```
+
+Применим в компоненте:
+
+```ts
+// src/app/children/devices/components/add-device/add-device.component.ts
+
+protected deviceForm: AddDeviceFormViewModel = new AddDeviceFormViewModel();  
+  
+protected onSubmit(): void {  
+    this.loading.set(true);  
+  
+    of(this.deviceForm.toModel())  
+        .pipe(  
+            delay(1000),  
+            finalize(() => this.loading.set(false)),  
+        )  
+    .subscribe((value) => {  
+        this.newDevices.push(value);  
+    });  
+}
+```
+
+В шаблоне:
+
+```ts
+<form [formGroup]="deviceForm.form" (ngSubmit)="onSubmit()">
+```
+
+```ts
+<input matInput [formControl]="deviceForm.controlsMap.deviceId">  
+<mat-error *ngIf="deviceForm.controlsMap.deviceId?.hasError('invalidUUID')">  
+    Device ID must be in UUID format.  
+</mat-error>
+
+<!---->
+
+<input matInput [formControl]="deviceForm.controlsMap.deviceName">
+
+<!---->
+
+<input matInput [formControl]="deviceForm.controlsMap.deviceModel">
+
+<!---->
+
+<button mat-flat-button color="primary" [disabled]="deviceForm.form.invalid || loading()" class="add-device-form__btn" type="submit">
+```
+Проверить что логика работы формы не поменялась

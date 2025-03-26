@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { IDeviceDataInterface } from '../../../../interfaces/device-data.interface';
+import { IDeviceData } from '../../../../interfaces/device-data.interface';
 import { Router } from '@angular/router';
 import { DeviceRequestService } from '../../../../services/device-request.service';
 
@@ -12,7 +12,7 @@ import { DeviceRequestService } from '../../../../services/device-request.servic
 })
 export class DeviceListComponent implements OnInit {
 
-    public devices: IDeviceDataInterface[] = [];
+    public devices: IDeviceData[] = [];
 
     public displayedColumns: string[] = ['position', 'name', 'model', 'id', 'date'];
 
@@ -27,6 +27,10 @@ export class DeviceListComponent implements OnInit {
 
     protected navigateToDetails(deviceId: string): void {
         this.router.navigate(['/devices', deviceId]);
+    }
+
+    protected navigateToAddDevice(): void {
+        this.router.navigate(['devices', 'add-device']);
     }
 
     public ngOnInit(): void {

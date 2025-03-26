@@ -4,6 +4,7 @@ import { DeviceListComponent } from './components/device-list/device-list.compon
 import { DeviceDetailsComponent } from './components/device-details/device-details.component';
 import { DeviceRequestService } from '../../services/device-request.service';
 import { HttpClientModule } from '@angular/common/http';
+import { AddDeviceComponent } from './components/add-device/add-device.component';
 // import { deviceResolver } from '../../resolvers/device.resolver';
 
 const routes: Routes = [
@@ -12,10 +13,14 @@ const routes: Routes = [
         component: DeviceListComponent
     },
     {
+        path: 'add-device',
+        component: AddDeviceComponent,
+    },
+    {
         path: ':deviceId',
         component: DeviceDetailsComponent,
         // resolve: { device: deviceResolver }
-    }
+    },
 ];
 
 @NgModule({
