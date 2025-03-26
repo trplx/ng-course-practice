@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, Observable, throwError } from 'rxjs';
 
-import { IDeviceDataInterface } from '../interfaces/device-data.interface';
+import { IDeviceData } from '../interfaces/device-data.interface';
 
 @Injectable()
 export class DeviceRequestService {
@@ -13,8 +13,8 @@ export class DeviceRequestService {
         private _http: HttpClient
     ) { }
 
-    public getDevices(): Observable<IDeviceDataInterface[]> {
-        return this._http.get<IDeviceDataInterface[]>(this._url)
+    public getDevices(): Observable<IDeviceData[]> {
+        return this._http.get<IDeviceData[]>(this._url)
             .pipe(
                 catchError(() => {
                     return throwError(() => 'Ошибка запроса списка девайсов');

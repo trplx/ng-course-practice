@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Data } from '@angular/router';
-import { IDeviceDataInterface } from '../../../../interfaces/device-data.interface';
+import { IDeviceData } from '../../../../interfaces/device-data.interface';
 
 @Component({
     standalone: false,
@@ -16,7 +16,7 @@ export class DeviceDetailsComponent {
 
     constructor() {
         this.activatedRoute.data.subscribe((data: Data) => {
-            const device: IDeviceDataInterface | undefined = data['device'];
+            const device: IDeviceData | undefined = data['device'];
 
             if (!device) {
                 return;

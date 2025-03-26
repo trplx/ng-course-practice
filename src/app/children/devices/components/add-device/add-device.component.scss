@@ -1,0 +1,17 @@
+.add-device-form {
+	&__wrapper {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 16px;
+		padding: 2rem;
+	}
+
+	&__control {
+		width: 100%;
+	}
+
+	&__btn {
+		width: 100%;
+	}
+}

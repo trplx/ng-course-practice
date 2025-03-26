@@ -1,4 +1,4 @@
-export interface IDeviceDataInterface {
+export interface IDeviceData {
     position: string;
     name: string;
     model: string;
