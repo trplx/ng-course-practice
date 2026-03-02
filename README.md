@@ -31,6 +31,7 @@ ng new project-name
 2. `<router-outlet/>` - необходима для отображения текущего активного роута, подробнее в лекции про маршрутизацию.
 
 3. Добавить папку components и перейти в нее cd ./src/app/components
+
 4. Сгенерировать компоненту хедера
 ```
 ng generate component header
@@ -240,7 +241,7 @@ import { MatTableModule } from '@angular/material/table';
 }
 ```
 
-15. Добавить интерфейс
+15. Добавить интерфейс (в отдельный файл)
 ```
 export interface IDeviceDataInterface {
     position: string;
@@ -254,13 +255,15 @@ export interface IDeviceDataInterface {
 для public devices в DeviceListComponent
 
 ```
-public device: IDeviceDataInterface  = {
+public devices: IDeviceDataInterface[]  = [
+    {
       position: '1',
       name: 'iPhone',
       model: '16 pro max',
       id: '12345',
       date: '19.02.2025'
-};
+    }
+];
 ```
 
 16. Сгенерировать компоненту device-details
@@ -273,12 +276,23 @@ ng generate component device-details
 import { MatListModule } from '@angular/material/list';
 ```
 
+Добавить свойство deviceOptions:
+```
+public deviceOptions: Array<{ label: string, value: string }> = [
+        { label: 'Position', value: '1'},
+        { label: 'Name', value: 'iPhone'},
+        { label: 'Model', value: '16 pro max'},
+        { label: 'Id', value: '12345'},
+        { label: 'Date', value: '19.02.2025'}
+    ]
+```
+
 17. Добавить шаблон для device-details.component
 ```
 <div class="device-details">
     <mat-list class="device-details__options-list">
         <mat-list-item>
-            {{ device.name }}: {{ device.model }}
+            {{ deviceOptions[0].label }}: {{ deviceOptions[0].value }}
         </mat-list-item>
     </mat-list>
 </div>
@@ -298,72 +312,31 @@ import { MatListModule } from '@angular/material/list';
 }
 ```
 
-18. Заменить компоненту в app.routes, посмотреть, что компоеннта детальной информации отображается в браузере.
+18. Заменить компоненту в app.routes, чтобы посмотреть, что компоент детальной информации отображается в браузере.
 
 
 ## Lesson 3
 
-1. Заменить свойство device на массив devices в DeviceListComponent:
-```
-public devices: IDeviceDataInterface[]  = [
-    {
-        "position": "1",
-        "name": "iPhone",
-        "model": "16 pro max",
-        "id": "aa57043e-1001-4ba0-be71-bd5b7e411a7f",
-        "date": "19.02.2025"
-    },
-    {
-        "position": "2",
-        "name": "Samsung ",
-        "model": "Galaxy S25 Ultra",
-        "id": "9f148057-a0db-48f4-ba4d-240ced323eec",
-        "date": "17.02.2025"
-    },
-    {
-        "position": "3",
-        "name": "Google",
-        "model": "Pixel 9 Pro XL",
-        "id": "56e19637-0be9-4f1a-af21-b49eb30dd31c",
-        "date": "18.02.2025"
-    },
-    {
-        "position": "4",
-        "name": "iPhone",
-        "model": "16 plus",
-        "id": "9b0b1717-22af-4aee-a57c-89b585e751b7",
-        "date": "19.02.2025"
-    },
-    {
-        "position": "5",
-        "name": "Xiaomi",
-        "model": "14 Ultra",
-        "id": "ab2d3cc7-69a2-4343-99cf-0ce6b9dae88a",
-        "date": "16.02.2025"
-    }
-];
-```
-
-2. Изменить шаблон для device-details.component для отображения списка устройств через директиву `*ngFor`
+1. Изменить шаблон для device-details.component для отображения списка опций через директиву `*ngFor`
 ```
 <div class="device-details ">
     <mat-list class="device-details__options-list">
         @for (item of deviceOptions; track item) {
             <mat-list-item *ngFor="item of devices">
-                {{ item.name }}: {{ item.model }}
+                {{ item.label }}: {{ item.value }}
             </mat-list-item>
         }
     </mat-list>
 </div>
 ```
 
-3. Поправить шаблон для device-details.component для отображения списка устройств с использованием нового синтаксиса `@for`
+2. Поправить шаблон для device-details.component для отображения списка опций устройств с использованием нового синтаксиса `@for`
 ```
 <div class="device-details ">
     <mat-list class="device-details__options-list">
         @for (item of devices; track item) {
             <mat-list-item>
-                {{ item.name }}: {{ item.model }}
+                {{ item.label }}: {{ item.value }}
             </mat-list-item>
         }
     </mat-list>
