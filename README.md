@@ -1047,3 +1047,224 @@ protected onSubmit(): void {
 <button mat-flat-button color="primary" [disabled]="deviceForm.form.invalid || loading()" class="add-device-form__btn" type="submit">
 ```
 Проверить что логика работы формы не поменялась
+
+## Lesson 8
+
+1. Создаем контрол
+Создаем компоненту rate в папке controls
+
+```
+ng generate c controls/rate
+```
+
+Провайдим в наш новый компонент NG_VALUE_ACCESSOR и имплементимся от ControlValueAccessor
+Реализуем необходимую логику из ControlValueAccessor
++ логику для работы контрола rates
+
+```ts
+@Component({
+  selector: 'app-rate',
+    standalone: true,
+  imports: [
+      CommonModule,
+  ],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => RateComponent),
+            multi: true,
+        }
+    ],
+  templateUrl: './rate.component.html',
+  styleUrl: './rate.component.scss'
+})
+export class RateComponent implements ControlValueAccessor, OnInit {
+
+    public options: InputSignal<IRateOptions> = input<IRateOptions>({ countRates: 5 });
+
+    public label: string | undefined = undefined;
+
+    public currentIndex: number = 0;
+
+    public rateArr: number[] = [];
+
+    public disable: boolean = false;
+
+
+    private touched: boolean = false;
+
+    public ngOnInit(): void {
+
+        this.label = this.options().label;
+
+        this.rateArr = [...Array(this.options().countRates)].map((_, i) => i + 1);
+    }
+
+    public onRate(value: number): void {
+        this.markAsTouched();
+        if (!this.disable) {
+            this.currentIndex = value;
+            this.onChange(value);
+        }
+
+    }
+
+    public markAsTouched(): void {
+        if (this.touched) {
+            this.onTouched();
+        }
+    }
+
+
+    writeValue(obj: any) {
+    }
+
+    public registerOnChange(fn: any) {
+        this.onChange = fn;
+    }
+
+    public registerOnTouched(fn: any) {
+        this.onTouched = fn;
+    }
+
+
+    public setDisabledState(isDisabled: boolean) {
+        this.disable = isDisabled;
+    }
+
+
+    onChange = (value: any) => {
+    }
+
+    onTouched = () => {}
+
+}
+```
+
+Шаблон
+```angular181html
+<div class="rate">
+    @if (label) {
+        <div class="rate__label">
+            {{label}}
+        </div>
+    }
+
+    <div class="rate__item-wrapper">
+        @for (index of rateArr; track index) {
+            <div
+                class="rate__item"
+                (click)="onRate(index)"
+                [ngClass]="index <= currentIndex ? 'rate__active' : ''">
+            </div>
+        }
+    </div>
+</div>
+ ```
+стили
+
+```scss
+.rate {
+    margin: 20px 0;
+
+    &__label {
+        margin: 20px 0;
+    }
+
+    &__item-wrapper {
+        display: flex;
+        gap: 7px;
+    }
+
+    &__item {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: transparent;
+        border: 2px solid #000;
+
+        transition: background-color 0.3s ease-in-out;
+
+        cursor: pointer;
+    }
+
+    &__active {
+        background-color: #ce2f2f;
+    }
+}
+
+ ```
+
+2. Связываем контрол с формой
+
+В интерфейс формы добавляем новое поле deviceRates
+
+```ts
+export interface IAddDeviceForm {
+    deviceId: FormControl<string>;
+    deviceName: FormControl<string>;
+    deviceModel: FormControl<string>;
+    deviceRates: FormControl<number>;
+}
+```
+
+В метод getControls добавляем новый контрол
+
+```ts
+protected getControls(): IAddDeviceForm {
+        const rateControl = new FormControl<number>(0, { nonNullable: true, validators: Validators.required })
+        return {
+            deviceId: new FormControl<string>(crypto.randomUUID(), { nonNullable: true, validators: uuidValidator() }),
+            deviceName: new FormControl<string>('', { nonNullable: true, validators:  Validators.required }),
+            deviceModel: new FormControl<string>('', { nonNullable: true, validators: Validators.required }),
+            deviceRates: rateControl,
+        };
+    }
+ ```
+
+В device.model.ts также добавляем новое поле rate
+
+```ts
+export class Device {
+    date: string = new Date().toISOString();
+    position: string = '6';
+
+    constructor(
+        public id: string = crypto.randomUUID(),
+        public name: string,
+        public model: string,
+        public rate: number,
+    ) {
+    }
+}
+```
+
+в controls/rate/interfaces добавляем новый интерфейс для настроек контрола
+
+```ts
+export interface IRateOptions {
+    label?: string,
+    countRates: number,
+}
+ ```
+
+В шаблоне компонента где используется форма (add-device.component.ts)
+добавляем поле настроек
+
+```ts
+protected rateControlOptions: IRateOptions = {
+    countRates: 7,
+    label: 'Рейтинг устройства',
+}
+```
+
+И наконец добавляем наш контрол в шаблон компонента формы
+
+```angular181html
+        <app-rate
+            [formControl]="deviceForm.controlsMap.deviceRates"
+            [options]="rateControlOptions"
+        ></app-rate>
+```
+
+Проверяем что контрол отображается и работает корректно
