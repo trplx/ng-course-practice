@@ -18,6 +18,11 @@
             <input matInput [formControl]="deviceForm.controlsMap.deviceModel">
         </mat-form-field>
 
+        <app-rate
+            [formControl]="deviceForm.controlsMap.deviceRates"
+            [options]="rateControlOptions"
+        ></app-rate>
+
         <button mat-flat-button color="primary" [disabled]="deviceForm.form.invalid || loading()" class="add-device-form__btn" type="submit">
             <mat-spinner *ngIf="loading()" diameter="24" color="primary" mode="indeterminate"></mat-spinner>
             <span *ngIf="!loading()">Add</span>

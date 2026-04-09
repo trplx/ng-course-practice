@@ -6,6 +6,7 @@ export class Device {
         public id: string = crypto.randomUUID(),
         public name: string,
         public model: string,
+        public rate: number,
     ) {
     }
 }

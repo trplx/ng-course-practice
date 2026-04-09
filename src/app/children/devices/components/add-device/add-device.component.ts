@@ -12,6 +12,8 @@ import { uuidValidator } from '../../validators/uuid.validator';
 import { UuidValidatorDirective } from '../../directives/uuid-validator.directive';
 import { IAddDeviceForm } from '../../intefaces/add-device-form.interface';
 import { AddDeviceFormViewModel } from '../../view-models/add-device-form.view-model';
+import {RateComponent} from '../../../../contorls/rate/rate.component';
+import {IRateOptions} from '../../../../contorls/rate/interfaces/rate-options.inteface';
 
 @Component({
     selector: 'app-add-device',
@@ -26,6 +28,7 @@ import { AddDeviceFormViewModel } from '../../view-models/add-device-form.view-m
         MatProgressSpinnerModule,
         MatError,
         UuidValidatorDirective,
+        RateComponent,
     ],
     templateUrl: './add-device.component.html',
     styleUrl: './add-device.component.scss'
@@ -35,6 +38,11 @@ export class AddDeviceComponent {
     protected loading: WritableSignal<boolean> = signal(false);
 
     protected deviceForm: AddDeviceFormViewModel = new AddDeviceFormViewModel();
+
+    protected rateControlOptions: IRateOptions = {
+        countRates: 7,
+        label: 'Рейтинг устройства',
+    }
 
     protected onSubmit(): void {
         this.loading.set(true);

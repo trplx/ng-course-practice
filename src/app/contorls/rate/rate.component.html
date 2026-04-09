@@ -1,0 +1,17 @@
+<div class="rate">
+    @if (label) {
+        <div class="rate__label">
+            {{label}}
+        </div>
+    }
+
+    <div class="rate__item-wrapper">
+        @for (index of rateArr; track index) {
+            <div
+                class="rate__item"
+                (click)="onRate(index)"
+                [ngClass]="index <= currentIndex ? 'rate__active' : ''">
+            </div>
+        }
+    </div>
+</div>
